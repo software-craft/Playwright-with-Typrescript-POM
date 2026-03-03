@@ -1,4 +1,5 @@
 import {Page, Locator} from '@playwright/test';
+import testData from '../data/testData.json';
 
 export class RegisterPage{
     
@@ -32,7 +33,6 @@ export class RegisterPage{
         await this.emailInput.fill(email);
         await this.passwordInput.fill(password);
     }
-
 
     async ClickRegisterButton() {
         await this.registerButton.click();
