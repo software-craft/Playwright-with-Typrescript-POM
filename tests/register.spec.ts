@@ -66,7 +66,8 @@ await expect(page.getByText('Registro exitoso!')).toBeVisible();
 
 test('TC-006 Verify that the user cannot register a second time.', async ({ page }) => {
 
-  const email = 'leonardoiglesias' + Date.now().toString() + '@gmail.com';
+  const baseEmail = testData.users.email.split('@');
+  // const email = `${baseEmail[0]}leonardoiglesias${Date.now()}@${baseEmail[1]}`;
   await registerPage.completeYClickRegister('Leonardo', 'Torres', email, 'Nm!2Caucho' );
   await expect(page.getByAltText('Registro exitoso!')).toBeVisible();
   await registerPage.visitRegisterPage();
