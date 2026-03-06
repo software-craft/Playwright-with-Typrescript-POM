@@ -29,49 +29,33 @@ await expect(registerPage.registerButton).toBeEnabled();
 });
 
 test('TC-004 Verify page redirection when clicking the Login button.', async ({ page }) => {
-await registerPage.ClickRegisterButton();
+await expect(page).toHaveURL('http://localhost:3000/signup');
+await page.getByTestId('boton-login-header-signup').click();
 await expect(page).toHaveURL('http://localhost:3000/login');
 
 });
 
-test('TC-005 Verify successful login with valid credentials.', async ({ page }) => {
-  test('TC-005 Verify successful login with valid credentials.', async ({ page }) => {
+test('TC-005 Verify successful registration with valid credentials', async ({ page }) => {
+  const uniqueEmail = `test${Date.now()}@mail.com`;
+  await registerPage.completeYClickRegister(
+    testData.users.firstName,
+    testData.users.lastName,
+    uniqueEmail,
+    testData.users.password
+  );
 
-  await test.step('TC-005 Verify successful login with valid credentials.', async () => {
-    await registerPage.FormRegisterComplete(
-      testData.users.firstName,
-      testData.users.lastName,
-      testData.users.email,
-      testData.users.password
-    );
-
-    await registerPage.visitRegisterPage();
-    await registerPage.completeYClickRegister(
-      'Leonardo',
-      'Iglesias',
-      'testing' + Date.now().toString() + '@email.com',
-      'Nm!2Caucho'
-    );
-
-    await registerPage.ClickRegisterButton();
-    await expect(page.getByText('Registro exitoso!')).toBeVisible();
-  });
-
+  await expect(page.getByText('Registro exitoso!')).toBeVisible(); // mail already in use
 });
-await registerPage.visitRegisterPage();
-await registerPage.completeYClickRegister('Leonardo', 'Iglesias', 'testing' + Date.now().toString() + '@email.com', 'Nm!2Caucho');
-await registerPage.ClickRegisterButton();
-await expect(page.getByText('Registro exitoso!')).toBeVisible();
-});
+
 
 test('TC-006 Verify that the user cannot register a second time.', async ({ page }) => {
 
-  const baseEmail = testData.users.email.split('@');
-  // const email = `${baseEmail[0]}leonardoiglesias${Date.now()}@${baseEmail[1]}`;
-  await registerPage.completeYClickRegister('Leonardo', 'Torres', email, 'Nm!2Caucho' );
-  await expect(page.getByAltText('Registro exitoso!')).toBeVisible();
+  const email = 'leonardi' + Date.now().toString() + '@gmail.com';
+
+  await registerPage.completeYClickRegister('Leonardo', 'Iglesias', email, 'Nm!2Caucho');
+  await expect(page.getByText('Registro exitoso!')).toBeVisible();
   await registerPage.visitRegisterPage();
   await registerPage.completeYClickRegister('Leonardo', 'Iglesias', email, 'Nm!2Caucho');
-  await expect(page.getByAltText('Email already in use')).toBeVisible();
-  await expect(page.getByAltText('Registro exitoso!')).not.toBeVisible();
+  await expect(page.getByText('email already in use')).toBeVisible();
+
 });
