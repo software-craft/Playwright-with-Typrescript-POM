@@ -29,3 +29,15 @@ test('TC-007 Verify successful login with valid credentials', async ({ page }) =
 });
 
 // 
+
+test('TC-008 Verify signup endpoint returns 201', async ({ request }) => {
+  const payload = {
+    firstName: testData.users.firstName,
+    lastName: testData.users.lastName,
+    email: `apiuser+${Date.now()}@mail.com`,
+    password: testData.users.password
+  };
+
+  const response = await request.post('http://localhost:6007/api/auth/signup', { data: payload });
+  expect(response.status()).toBe(201);
+});
