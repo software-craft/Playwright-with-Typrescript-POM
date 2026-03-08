@@ -2,10 +2,12 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/loginPage';
 import { RegisterPage } from '../pages/registerPage';
 import testData from '../data/testData.json';
+import { DashboardPage } from '../pages/dashboardPage';
 
 test('TC-007 Verify successful login with valid credentials', async ({ page }) => {
     const registerPage = new RegisterPage(page);
     const loginPage = new LoginPage(page);
+    const dashboardPage = new DashboardPage(page);
 
     const email = `testuser+${Date.now()}@mail.com`;
     const password = testData.users.password;
@@ -23,5 +25,5 @@ test('TC-007 Verify successful login with valid credentials', async ({ page }) =
     await loginPage.login(email, password);
 
     await expect(page.getByText('Inicio de sesión exitoso')).toBeVisible();
-    await expect(page.getByTestId('titulo-dashboard')).toBeVisible();
+    await expect(dashboardPage.dashboardTitle).toBeVisible();
 });
