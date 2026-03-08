@@ -27,3 +27,5 @@ test('TC-007 Verify successful login with valid credentials', async ({ page }) =
     await expect(page.getByText('Inicio de sesión exitoso')).toBeVisible();
     await expect(dashboardPage.dashboardTitle).toBeVisible();
 });
+
+// 
