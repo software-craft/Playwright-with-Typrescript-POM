@@ -60,9 +60,7 @@ test('TC-006 Verify that the user cannot register a second time.', async ({ page
 
 });
 
-// API level verification for signup
-
-test('TC-008 Verify signup endpoint returns 201', async ({ request }) => {
+test('TC-008 Verify signup endpoint returns 201 and valid body structure', async ({ request }) => {
   const payload = {
     firstName: testData.users.firstName,
     lastName: testData.users.lastName,
@@ -72,4 +70,16 @@ test('TC-008 Verify signup endpoint returns 201', async ({ request }) => {
 
   const response = await request.post('http://localhost:6007/api/auth/signup', { data: payload });
   expect(response.status()).toBe(201);
+
+  const body = await response.json();
+  expect(body).toHaveProperty('token');
+  expect(typeof body.token).toBe('string');
+  expect(body).toHaveProperty('user');
+  expect(body.user).toMatchObject({
+    firstName: payload.firstName,
+    lastName: payload.lastName,
+    email: payload.email
+  });
+  expect(body.user.id).toBeTruthy();
 });
+
