@@ -104,4 +104,29 @@ test('TC-009 verify signup using the API', async ({ page, request }) => {
     lastName: testData.users.lastName,
     email: email
   }));
+
 });
+
+test('TC-010 Verify frontend behavior when signup returns 500 error', async ({ page }) => {
+  const uniqueEmail = `test${Date.now()}@mail.com`;
+  
+  await page.route('**/api/auth/signup', (route) => {
+    route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: 'Internal Server Error' })
+    });
+  });
+  
+  await registerPage.completeYClickRegister(
+    testData.users.firstName,
+    testData.users.lastName,
+    uniqueEmail,
+    testData.users.password
+  );
+  
+  await expect(page.getByText('Registro exitoso!')).not.toBeVisible();
+  
+  await page.screenshot({ path: 'error-500-response.png' });
+});
+
