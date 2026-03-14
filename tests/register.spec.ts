@@ -4,7 +4,6 @@ import testData from '../data/testData.json';
 
 let registerPage: RegisterPage;
 
-
 test.beforeEach(async ({ page }) => {
     registerPage = new RegisterPage(page);
     await registerPage.visitRegisterPage();
@@ -85,6 +84,7 @@ test('TC-008 Verify signup endpoint returns 201 and valid body structure', async
 
 test('TC-009 verify signup using the API', async ({ page, request }) => {
   const email = `apiuser+${Date.now()}@mail.com`;
+
   const response = await request.post('http://localhost:6007/api/auth/signup', {
     data: {
       firstName: testData.users.firstName,
