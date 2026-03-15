@@ -82,30 +82,6 @@ test('TC-008 Verify signup endpoint returns 201 and valid body structure', async
   expect(body.user.id).toBeTruthy();
 });
 
-test('TC-009 verify signup using the API', async ({ page, request }) => {
-  const email = `apiuser+${Date.now()}@mail.com`;
-
-  const response = await request.post('http://localhost:6007/api/auth/signup', {
-    data: {
-      firstName: testData.users.firstName,
-      lastName: testData.users.lastName,
-      email: email,
-      password: testData.users.password
-    }
-  });
-
-  const responseBody = await response.json();
-  expect(response.status()).toBe(201);
-  expect(responseBody).toHaveProperty('token');
-  expect(typeof responseBody.token).toBe('string');
-  expect(responseBody).toHaveProperty('user');
-  expect(responseBody.user).toEqual(expect.objectContaining({
-    firstName: testData.users.firstName,
-    lastName: testData.users.lastName,
-    email: email
-  }));
-
-});
 
 test('TC-010 Verify frontend behavior when signup returns 500 error', async ({ page }) => {
   const uniqueEmail = `test${Date.now()}@mail.com`;

@@ -53,3 +53,24 @@ test('TC-008 Verify signup endpoint returns 201 and correct JSON structure', asy
   });
   expect(body.user.id).toBeTruthy();
 });
+
+test('TC-011 Log in using a newly created user account provisioned through the backend.', async ({ request, page }) => {
+  const payload = {
+    firstName: testData.users.firstName,
+    lastName: testData.users.lastName,
+    email: `apiuser+${Date.now()}@mail.com`,
+    password: testData.users.password
+  };
+
+  const response = await request.post('http://localhost:6007/api/auth/signup', { data: payload });
+  expect(response.status()).toBe(201);
+
+  const loginPage = new LoginPage(page);
+  const dashboardPage = new DashboardPage(page);
+
+  await loginPage.visit();
+  await loginPage.login(payload.email, payload.password);
+
+  await expect(page.getByText('Inicio de sesión exitoso')).toBeVisible();
+  await expect(dashboardPage.dashboardTitle).toBeVisible();
+});
