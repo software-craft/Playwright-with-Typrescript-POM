@@ -54,22 +54,59 @@ test('TC-008 Verify signup endpoint returns 201 and correct JSON structure', asy
   expect(body.user.id).toBeTruthy();
 });
 
-test('TC-011 Log in using a newly created user account provisioned through the backend.', async ({ request, page }) => {
-  const payload = {
-    firstName: testData.users.firstName,
-    lastName: testData.users.lastName,
-    email: `apiuser+${Date.now()}@mail.com`,
-    password: testData.users.password
-  };
-
-  const response = await request.post('http://localhost:6007/api/auth/signup', { data: payload });
-  expect(response.status()).toBe(201);
-
+test('TC-011 Login with new user created by backend', async ({ page, request }) => {
   const loginPage = new LoginPage(page);
   const dashboardPage = new DashboardPage(page);
 
+  const email = `apiuser+${Date.now()}@mail.com`;
+  const TestData = {
+    usuarioValido: {
+      nombre: testData.users.firstName,
+      apellido: testData.users.lastName,
+      contraseña: testData.users.password
+    }
+  };
+
+  const response = await request.post('http://localhost:6007/api/auth/signup', {
+    headers: {
+      apiKey: 'apiKeyValue',
+      contentType: 'application/json',
+    },
+    data: {
+      firstName: TestData.usuarioValido.nombre,
+      lastName: TestData.usuarioValido.apellido,
+      email: email,
+      password: TestData.usuarioValido.contraseña,
+    }
+  });
+
+  expect(response.status()).toBe(201);
+
+  const signupBody = await response.json();
+  expect(signupBody).toHaveProperty('token');
+  expect(typeof signupBody.token).toBe('string');
+  expect(signupBody).toHaveProperty('user');
+  expect(signupBody.user).toMatchObject({
+    firstName: TestData.usuarioValido.nombre,
+    lastName: TestData.usuarioValido.apellido,
+    email: email
+  });
+  expect(signupBody.user.id).toBeTruthy();
+
+  const responsePromiseLogin = page.waitForResponse('http://localhost:6007/api/auth/login');
   await loginPage.visit();
-  await loginPage.login(payload.email, payload.password);
+  await loginPage.completeYHacerClickBotonLogin({
+    email: email,
+    contraseña: TestData.usuarioValido.contraseña
+  });
+
+  const responseLogin = await responsePromiseLogin;
+  const responseBodyLoginJson = await responseLogin.json();
+
+  expect(responseLogin.status()).toBe(200);
+  expect(responseBodyLoginJson).toHaveProperty('token');
+  expect(typeof responseBodyLoginJson.token).toEqual('string');
+  expect(responseBodyLoginJson).toHaveProperty('user');
 
   await expect(page.getByText('Inicio de sesión exitoso')).toBeVisible();
   await expect(dashboardPage.dashboardTitle).toBeVisible();

@@ -22,4 +22,10 @@ export class LoginPage {
     await this.passwordInput.fill(password);
     await this.submitButton.click();
   }
+
+  async completeYHacerClickBotonLogin(credentials: { email: string; contraseña: string }) {
+    await this.emailInput.fill(credentials.email);
+    await this.passwordInput.fill(credentials.contraseña);
+    await this.submitButton.click();
+  }
 }
